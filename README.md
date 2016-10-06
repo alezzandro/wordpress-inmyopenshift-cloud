@@ -4,6 +4,10 @@ This repository holds an OpenShift ready template for running a wordpress platfo
 <br>
 <a href="http://wordpress.inmyopenshift.cloud">http://wordpress.inmyopenshift.cloud</a>
 
+## Overview
+The following template will setup on your OpenShift platform a WordPress platform composed by an Apache webserver (the official wordpress container on DockerHub) and a centos-mysql container for holding back the wordpress data.<br>
+Keep in mind that all the setup is stateless: mysql container is shipped with emptyDir volume, you should replace it with a persistent volume to ensure data saving.
+
 ## Requirements
 This is a briefly list of the necessary requirements before trying run the template:
 * Internet access (at least docker.io in whitelist) from your working OpenShift platform

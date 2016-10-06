@@ -1,6 +1,8 @@
 # Openshift ready template for WordPress platform!
 
 This repository holds an OpenShift ready template for running a wordpress platform on your OpenShift PaaS.
+<br>
+<a href="http://wordpress.inmyopenshift.cloud">http://wordpress.inmyopenshift.cloud</a>
 
 ## Requirements
 This is a briefly list of the necessary requirements before trying run the template:

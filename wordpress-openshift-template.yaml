@@ -1,0 +1,246 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: wordpress-openshift
+metadata:
+  annotations:
+    description: Wordpress application with a MySQL database
+    iconClass: icon-php
+    tags: quickstart,php,wordpress,mysql
+  creationTimestamp: null
+  name: wordpress-openshift
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    name: ${NAME}
+  spec:
+    ports:
+    - name: web
+      port: 80
+      targetPort: 80
+    selector:
+      name: ${NAME}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${NAME}
+  spec:
+    host: ${APPLICATION_DOMAIN}
+    port:
+      targetPort: web
+    to:
+      kind: Service
+      name: ${NAME}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the application server
+    name: ${NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${NAME}
+        name: ${NAME}
+      spec:
+        containers:
+        - env:
+          - name: WORDPRESS_DB_HOST
+            value: ${DATABASE_SERVICE_NAME}
+          - name: WORDPRESS_DB_NAME
+            value: ${DATABASE_NAME}
+          - name: WORDPRESS_DB_USER
+            value: ${DATABASE_USER}
+          - name: WORDPRESS_DB_PASSWORD
+            value: ${DATABASE_PASSWORD}
+          - name: WORDPRESS_AUTH_KEY
+            value: ${WORDPRESS_AUTH_KEY}
+          - name: WORDPRESS_SECURE_AUTH_KEY
+            value: ${WORDPRESS_SECURE_AUTH_KEY}
+          - name: WORDPRESS_LOGGED_IN_KEY
+            value: ${WORDPRESS_LOGGED_IN_KEY}
+          - name: WORDPRESS_NONCE_KEY
+            value: ${WORDPRESS_NONCE_KEY}
+          - name: WORDPRESS_AUTH_SALT
+            value: ${WORDPRESS_AUTH_SALT}
+          - name: WORDPRESS_SECURE_AUTH_SALT
+            value: ${WORDPRESS_SECURE_AUTH_SALT}
+          - name: WORDPRESS_LOGGED_IN_SALT
+            value: ${WORDPRESS_LOGGED_IN_SALT}
+          - name: WORDPRESS_NONCE_SALT
+            value: ${WORDPRESS_NONCE_SALT}
+          image: docker.io/wordpress:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+          name: wordpress-openshift
+          ports:
+          - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            timeoutSeconds: 3
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+    triggers:
+    - type: ConfigChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes the database server
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the database
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${DATABASE_SERVICE_NAME}
+        name: ${DATABASE_SERVICE_NAME}
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_USER
+            value: ${DATABASE_USER}
+          - name: MYSQL_PASSWORD
+            value: ${DATABASE_PASSWORD}
+          - name: MYSQL_ROOT_PASSWORD
+            value: ${DATABASE_ROOT_PASSWORD}
+          - name: MYSQL_DATABASE
+            value: ${DATABASE_NAME}
+          image: centos/mysql-56-centos7:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 3306
+            timeoutSeconds: 1
+          name: mysql
+          ports:
+          - containerPort: 3306
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - MYSQL_PWD='${DATABASE_PASSWORD}' mysql -h 127.0.0.1 -u ${DATABASE_USER}
+                -D ${DATABASE_NAME} -e 'SELECT 1'
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+          resources:
+            limits:
+              memory: ${MEMORY_MYSQL_LIMIT}
+          volumeMounts:
+          - mountPath: /var/lib/mysql/data
+            name: data
+        volumes:
+        - emptyDir: {}
+          name: data
+    triggers:
+    - type: ConfigChange
+parameters:
+- description: The name assigned to all of the frontend objects defined in this template.
+  displayName: Name
+  name: NAME
+  required: true
+  value: wordpress-openshift
+- description: Maximum amount of memory the Wordpress container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  required: true
+  value: 512Mi
+- description: Maximum amount of memory the MySQL container can use.
+  displayName: Memory Limit (MySQL)
+  name: MEMORY_MYSQL_LIMIT
+  required: true
+  value: 512Mi
+- description: The exposed hostname that will route to the Wordpress service, if left
+    blank a value will be defaulted.
+  displayName: Application Hostname
+  name: APPLICATION_DOMAIN
+- displayName: Database Service Name
+  name: DATABASE_SERVICE_NAME
+  required: true
+  value: mysql
+- displayName: Database Name
+  name: DATABASE_NAME
+  required: true
+  value: default
+- displayName: Database User
+  name: DATABASE_USER
+  required: true
+  value: wordpress
+- displayName: Database Password
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  name: DATABASE_PASSWORD
+- displayName: Database root Password
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  name: DATABASE_ROOT_PASSWORD
+- displayName: Wordpress auth key
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: WORDPRESS_AUTH_KEY
+- displayName: Wordpress secure auth key
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: WORDPRESS_SECURE_AUTH_KEY
+- displayName: Wordpress logged in key
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: WORDPRESS_LOGGED_IN_KEY
+- displayName: Wordpress nonce key
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: WORDPRESS_NONCE_KEY
+- displayName: Wordpress auth salt
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: WORDPRESS_AUTH_SALT
+- displayName: Wordpress secure auth salt
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: WORDPRESS_SECURE_AUTH_SALT
+- displayName: Wordpress logged in salt
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: WORDPRESS_LOGGED_IN_SALT
+- displayName: Wordpress nonce salt
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: WORDPRESS_NONCE_SALT

@@ -9,7 +9,7 @@ This is a briefly list of the necessary requirements before trying run the templ
 
 ## How-to
 Easy and fast deployment in few steps:
-[code]
+```
 $ git clone https://github.com/alezzandro/wordpress-inmyopenshift-cloud.git
 
 $ cd wordpress-inmyopenshift-cloud
@@ -17,7 +17,7 @@ $ cd wordpress-inmyopenshift-cloud
 $ oc create -f wordpress-openshift-template.yaml
 
 $ oc new-app wordpress-openshift
-[/code]
+```
 
 ## Advanced configuration
 You'll find below a list of the all available fields for advanced configuration:

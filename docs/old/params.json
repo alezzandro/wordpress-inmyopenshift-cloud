@@ -1,0 +1,6 @@
+{
+  "name": "Inmyopenshift-cloud",
+  "tagline": "Placeholder project for all the OpenShift ready templates",
+  "body": "## Disclaimer\r\nThe aims of this project and its authors is to bring to OpenShift platform a bunch of templates for deploying in the more easier way existing applications.<br>\r\nJust because many software vendor already provide a containerized version of their product, all the templates you'll find in the page would try to use any exisisting container and may give you all the necessary tips for configuring your OpenShift for better running the chosen containerized application.<br>\r\nEvery project/template has its own git repository on GitHub with associated a github page and a custom subdomain of <b>inmyopenshift.cloud</b>.<br>\r\n<br>\r\nHave you found a bug? Want to submit a new project/template? Make a pull request!\r\n\r\n## List of Openshift ready templates\r\nYou'll find below a list of the available OpenShift ready template\r\n\r\n* <a href=\"http://wordpress.inmyopenshift.cloud\">WordPress: a web software you can use to create a beautiful website, blog, or app</a>\r\n\r\n## Authors\r\n* Alessandro Arrichiello - alezzandro@gmail.com - <a href=\"http://alezzandro.com\">http://alezzandro.com</a>\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}

@@ -1,0 +1,22 @@
+# Setup
+title:        wordpress.inmyopenshift.cloud
+tagline:      Openshift ready template for WordPress platform!
+baseurl:      ""
+paginate:     1
+github:       https://github.com/alezzandro/wordpress-inmyopenshift-cloud
+download:     https://github.com/alezzandro/wordpress-inmyopenshift-cloud/tarball/master
+
+gradient_color1: "#155799"
+gradient_color2: "#88e2ff"
+
+# About/contact
+author:
+  name:       Alessandro Arrichiello
+  url:        http://wordpress.inmyopenshift.cloud 
+
+# Gems
+gems:
+  - jekyll-paginate
+
+#Others
+markdown: kramdown

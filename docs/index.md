@@ -15,6 +15,7 @@ Keep in mind that all the setup is stateless: mysql container is shipped with em
 
 ## Requirements
 This is a briefly list of the necessary requirements before trying run the template:
+
 * Internet access (at least docker.io in whitelist) from your working OpenShift platform
 * RUNASUSER field for 'restricted' Security Context Constraint (scc) set to 'RunAsAny'. This is necessary for letting WordPress official container to run as root. -> ($ <i>oc edit scc restricted</i>)
 
@@ -33,6 +34,7 @@ $ oc new-app wordpress-openshift
 
 ## Advanced configuration
 You'll find below a list of the all available fields for advanced configuration:
+
 * NAME: The name assigned to all of the frontend objects defined in this template
 * MEMORY_LIMIT: Maximum amount of memory the Wordpress container can use
 * MEMORY_MYSQL_LIMIT: Maximum amount of memory the MySQL container can use
